@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class Issue
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false)
@@ -19,27 +20,27 @@ public class Issue
     private int storyPoints;
 
     @ManyToOne
-    @JoinColumn(name="id", nullable=false)
+    @JoinColumn(name="board", nullable=false)
     private Board board;
 
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="assigned_to")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name="id", nullable=false)
+    @JoinColumn(name="label", nullable=false)
     private Label label;
 
     @ManyToOne
-    @JoinColumn(name="id", nullable=false)
+    @JoinColumn(name="category", nullable=false)
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name="id", nullable=false)
+    @JoinColumn(name="stage", nullable=false)
     private Stage stage;
 
     @ManyToOne
-    @JoinColumn(name="id", nullable=false)
+    @JoinColumn(name="priority", nullable=false)
     private Priority priority;
 
     public Issue(){}

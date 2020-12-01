@@ -8,10 +8,11 @@ import java.util.List;
 public class User
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    @JoinColumn(name="id", nullable=false)
+    @JoinColumn(name="account", nullable=false)
     private Account account;
 
     @Column(nullable = false)
@@ -20,8 +21,8 @@ public class User
     @ManyToMany
     @JoinTable(
             name = "boards",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id"))
+            joinColumns = @JoinColumn(name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "board"))
     private List<Board> boards;
 
     public User(){}

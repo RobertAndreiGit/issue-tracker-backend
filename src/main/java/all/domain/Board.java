@@ -8,29 +8,30 @@ import java.util.List;
 public class Board
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false)
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="id", nullable=false)
+    @JoinColumn(name="owner", nullable=false)
     private User account;
 
     @ManyToMany
     @JoinTable(
             name = "users",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id"))
+            joinColumns = @JoinColumn(name = "board"),
+            inverseJoinColumns = @JoinColumn(name = "user"))
     private List<User> users;
 
     public Board(){}
 
-    public Board(int id, String name, User account)
+    public Board(String name, User account, List<User> users)
     {
-        this.id = id;
         this.name = name;
         this.account = account;
+        this.users = users;
     }
 
     public int getId()
@@ -61,5 +62,15 @@ public class Board
     public void setAccount(User account)
     {
         this.account = account;
+    }
+
+    public List<User> getUsers()
+    {
+        return users;
+    }
+
+    public void setUsers(List<User> users)
+    {
+        this.users = users;
     }
 }
