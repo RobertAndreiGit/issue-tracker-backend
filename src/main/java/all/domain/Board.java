@@ -18,7 +18,7 @@ public class Board
     @JoinColumn(name="owner", nullable=false)
     private User owner;
 
-    @ManyToMany
+    @ManyToMany(cascade=CascadeType.MERGE)
     @JoinTable(
             name = "users",
             joinColumns = @JoinColumn(name = "board"),

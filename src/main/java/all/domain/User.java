@@ -18,7 +18,7 @@ public class User
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade=CascadeType.MERGE)
     @JoinTable(
             name = "boards",
             joinColumns = @JoinColumn(name = "user"),

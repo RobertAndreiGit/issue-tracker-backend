@@ -76,7 +76,7 @@ public class RequestListener
     }
 
     @PostMapping("/board/users/add")
-    public boolean addUserToBoard(@RequestBody AddUserToBoardRequestEntity requestEntity)
+    public int addUserToBoard(@RequestBody AddUserToBoardRequestEntity requestEntity)
     {
         return service.addUserToBoard(requestEntity.getIdBoard(),requestEntity.getUsername(),getAccountUsername());
     }
@@ -87,10 +87,10 @@ public class RequestListener
         return service.deleteUserFromBoard(boardId,username,getAccountUsername());
     }
 
-    @DeleteMapping("/board/{boardId}/users/leave/{username}")
-    public boolean leaveBoard(@PathVariable(name="boardId") int boardId,@PathVariable(name="username") String username)
+    @DeleteMapping("/board/{boardId}/users/leave")
+    public boolean leaveBoard(@PathVariable(name="boardId") int boardId)
     {
-        return service.leaveBoard(boardId,username,getAccountUsername());
+        return service.leaveBoard(boardId,getAccountUsername());
     }
 
     @GetMapping("/board/{boardId}/issues")
@@ -170,7 +170,7 @@ public class RequestListener
     @PostMapping("/board/issues/label/change")
     public boolean changeIssueLabel(ChangeIssueLabelRequestEntity entity)
     {
-        return service.changeIssueLabel(entity.getBoardId(),entity.getIssueId(),entity.getLabel(),getAccountUsername());
+        return service.changeIssueLabel(entity.getBoardId(),entity.getIssueId(),entity.getLabel(),entity.getColour(),getAccountUsername());
     }
 
     @PostMapping("/board/issues/title/change")
