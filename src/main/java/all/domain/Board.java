@@ -16,7 +16,7 @@ public class Board
 
     @ManyToOne
     @JoinColumn(name="owner", nullable=false)
-    private User account;
+    private User owner;
 
     @ManyToMany
     @JoinTable(
@@ -27,10 +27,10 @@ public class Board
 
     public Board(){}
 
-    public Board(String name, User account, List<User> users)
+    public Board(String name, User owner, List<User> users)
     {
         this.name = name;
-        this.account = account;
+        this.owner = owner;
         this.users = users;
     }
 
@@ -54,14 +54,14 @@ public class Board
         this.name = name;
     }
 
-    public User getAccount()
+    public User getOwner()
     {
-        return account;
+        return owner;
     }
 
-    public void setAccount(User account)
+    public void setOwner(User owner)
     {
-        this.account = account;
+        this.owner = owner;
     }
 
     public List<User> getUsers()

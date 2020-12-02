@@ -1,5 +1,7 @@
 package all.domain;
 
+import all.domain.enums.EnumPriority;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,12 +12,13 @@ public class Priority
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String name;
+    private EnumPriority name;
 
     public Priority(){}
 
-    public Priority(int id, String name)
+    public Priority(int id, EnumPriority name)
     {
         this.id = id;
         this.name = name;
@@ -31,12 +34,12 @@ public class Priority
         this.id = id;
     }
 
-    public String getName()
+    public EnumPriority getName()
     {
         return name;
     }
 
-    public void setName(String name)
+    public void setName(EnumPriority name)
     {
         this.name = name;
     }

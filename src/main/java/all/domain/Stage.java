@@ -1,5 +1,7 @@
 package all.domain;
 
+import all.domain.enums.EnumStage;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,12 +12,13 @@ public class Stage
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private String name;
+    private EnumStage name;
 
     public Stage(){}
 
-    public Stage(int id, String name)
+    public Stage(int id, EnumStage name)
     {
         this.id = id;
         this.name = name;
@@ -31,12 +34,12 @@ public class Stage
         this.id = id;
     }
 
-    public String getName()
+    public EnumStage getName()
     {
         return name;
     }
 
-    public void setName(String name)
+    public void setName(EnumStage name)
     {
         this.name = name;
     }
