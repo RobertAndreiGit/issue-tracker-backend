@@ -455,9 +455,26 @@ public class Service
             return false;
         }
 
+        Optional<Board> optionalBoard=boardRepository.findById(boardId);
+
+        if(!optionalBoard.isPresent())
+        {
+            return false;
+        }
+
+        Board board=optionalBoard.get();
         List<Issue> issues=issueRepository.findAllByBoard_Id(boardId);
 
         issues.forEach((issue)->issueRepository.delete(issue));
+
+        for(User user:board.getUsers())
+        {
+            user.getBoards().removeIf((userBoard)->board.getId()==userBoard.getId());
+            userRepository.save(user);
+        }
+
+        board.getUsers().clear();
+        boardRepository.save(board);
 
         return true;
     }
@@ -525,6 +542,11 @@ public class Service
 
     public boolean register(String username, String password, String name)
     {
+        if(name.equals(""))
+        {
+            return false;
+        }
+
         Optional<Account> optionalAccount=accountRepository.findByUsername(username);
 
         if(optionalAccount.isPresent())
