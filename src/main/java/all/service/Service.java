@@ -4,6 +4,7 @@ import all.domain.*;
 import all.repository.*;
 import all.request_handler.request_entities.AddIssueRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class Service
     private PriorityRepository priorityRepository;
     private StageRepository stageRepository;
     private UserRepository userRepository;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     public Service(AccountRepository accountRepository, BoardRepository boardRepository, CategoryRepository categoryRepository, IssueRepository issueRepository, LabelRepository labelRepository, PriorityRepository priorityRepository, StageRepository stageRepository, UserRepository userRepository)
@@ -33,6 +35,7 @@ public class Service
         this.priorityRepository = priorityRepository;
         this.stageRepository = stageRepository;
         this.userRepository = userRepository;
+        passwordEncoder=new BCryptPasswordEncoder();
     }
 
     private boolean isUserOwnerOfBoard(String ownerUsername,int boardId)
@@ -516,6 +519,28 @@ public class Service
 
         removeUserFromBoardIssues(optionalUser.get(),boardId);
         removeUserFromMtmBoard(optionalUser.get(),boardId);
+
+        return true;
+    }
+
+    public boolean register(String username, String password, String name)
+    {
+        Optional<Account> optionalAccount=accountRepository.findByUsername(username);
+
+        if(optionalAccount.isPresent())
+        {
+            return false;
+        }
+
+        Account account=new Account();
+        account.setUsername(username);
+        account.setPassword(passwordEncoder.encode(password));
+
+        User user=new User();
+        user.setName(name);
+        user.setAccount(account);
+
+        userRepository.save(user);
 
         return true;
     }

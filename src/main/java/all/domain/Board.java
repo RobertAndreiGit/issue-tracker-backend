@@ -14,7 +14,7 @@ public class Board
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="owner", nullable=false)
     private User owner;
 

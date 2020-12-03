@@ -190,4 +190,10 @@ public class RequestListener
     {
         return service.deleteIssue(boardId,issueId,getAccountUsername());
     }
+
+    @PostMapping("/register")
+    public boolean register(@RequestBody RegisterRequestEntity entity)
+    {
+        return service.register(entity.getUsername(),entity.getPassword(),entity.getName());
+    }
 }

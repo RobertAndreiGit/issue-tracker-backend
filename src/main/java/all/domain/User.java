@@ -11,14 +11,14 @@ public class User
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY,cascade=CascadeType.PERSIST)
     @JoinColumn(name="account", nullable=false)
     private Account account;
 
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade=CascadeType.MERGE)
+    @ManyToMany(fetch=FetchType.LAZY,cascade=CascadeType.MERGE)
     @JoinTable(
             name = "boards",
             joinColumns = @JoinColumn(name = "user"),

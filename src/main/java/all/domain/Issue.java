@@ -19,27 +19,27 @@ public class Issue
     @Column(nullable = false)
     private int storyPoints;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="board", nullable=false)
     private Board board;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="assigned_to")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY,cascade=CascadeType.PERSIST)
     @JoinColumn(name="label", nullable=false)
     private Label label;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="category", nullable=false)
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="stage", nullable=false)
     private Stage stage;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="priority", nullable=false)
     private Priority priority;
 
