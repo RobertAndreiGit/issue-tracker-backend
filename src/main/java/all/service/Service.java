@@ -340,6 +340,11 @@ public class Service
             return false;
         }
 
+        if(colour.length()!=7 || colour.charAt(0)!='#')
+        {
+            colour="#FFFFFF";
+        }
+
         Issue issue =issueRepository.findById(issueId).get();
 
         Optional<Label> optionalLabel=labelRepository.findByNameAndColour(labelText,colour);
@@ -543,6 +548,16 @@ public class Service
     public boolean register(String username, String password, String name)
     {
         if(name.equals(""))
+        {
+            return false;
+        }
+
+        if(username.equals(""))
+        {
+            return false;
+        }
+
+        if(password.equals(""))
         {
             return false;
         }
