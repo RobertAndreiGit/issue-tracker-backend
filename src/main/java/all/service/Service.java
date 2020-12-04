@@ -3,6 +3,7 @@ package all.service;
 import all.domain.*;
 import all.repository.*;
 import all.request_handler.request_entities.AddIssueRequestEntity;
+import all.request_handler.response_entities.utils.Messages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -85,18 +86,18 @@ public class Service
         return savedBoard.getId();
     }
 
-    public int addUserToBoard(int boardId, String username, String ownerUsername)
+    public String addUserToBoard(int boardId, String username, String ownerUsername)
     {
         if(!isUserOwnerOfBoard(ownerUsername,boardId))
         {
-            return -1;
+            return Messages.USER_NOT_THE_BOARD_OWNER_;
         }
 
         Optional<User> optionalUser=userRepository.findUserByAccount_Username(username);
 
         if(!optionalUser.isPresent())
         {
-            return -1;
+            return Messages.USER_ADD_DOES_NOT_EXIST;
         }
 
         Board board=boardRepository.findById(boardId).get();
@@ -105,7 +106,7 @@ public class Service
         user.getBoards().add(board);
         userRepository.save(user);
 
-        return user.getId();
+        return Integer.toString(user.getId());
     }
 
     public List<Stage> getStages()
@@ -159,16 +160,16 @@ public class Service
         return issue.getBoard().getId() == boardId;
     }
 
-    public boolean takeIssue(int boardId, int issueId, String accountUsername)
+    public String takeIssue(int boardId, int issueId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -177,13 +178,13 @@ public class Service
 
         if(!optionalUser.isPresent())
         {
-            return false;
+            return Messages.USER_DOES_NOT_EXIST;
         }
 
         issue.setUser(optionalUser.get());
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
     public List<Priority> getPriorities()
@@ -196,32 +197,32 @@ public class Service
         return priorityRepository.findAll();
     }
 
-    public boolean createIssue(AddIssueRequestEntity entity, String accountUsername)
+    public String createIssue(AddIssueRequestEntity entity, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,entity.getBoardId()))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         Optional<Stage> optionalStage=stageRepository.findById(entity.getStageId());
 
         if(!optionalStage.isPresent())
         {
-            return false;
+            return Messages.STAGE_DOES_NOT_EXIST;
         }
 
         Optional<Category> optionalCategory=categoryRepository.findById(entity.getCategoryId());
 
         if(!optionalCategory.isPresent())
         {
-            return false;
+            return Messages.CATEGORY_DOES_NOT_EXIST;
         }
 
         Optional<Priority> optionalPriority=priorityRepository.findById(entity.getPriorityId());
 
         if(!optionalPriority.isPresent())
         {
-            return false;
+            return Messages.PRIORITY_DOES_NOT_EXIST;
         }
 
         Issue issue=new Issue();
@@ -251,19 +252,19 @@ public class Service
 
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean changeIssueStage(int boardId, int issueId, int stageId, String accountUsername)
+    public String changeIssueStage(int boardId, int issueId, int stageId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -272,25 +273,25 @@ public class Service
 
         if(!optionalStage.isPresent())
         {
-            return false;
+            return Messages.STAGE_DOES_NOT_EXIST;
         }
 
         issue.setStage(optionalStage.get());
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean changeStoryPoints(int boardId, int issueId, int value, String accountUsername)
+    public String changeStoryPoints(int boardId, int issueId, int value, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -298,19 +299,19 @@ public class Service
         issue.setStoryPoints(value);
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean changePriority(int boardId, int issueId, int priorityId, String accountUsername)
+    public String changePriority(int boardId, int issueId, int priorityId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -319,25 +320,25 @@ public class Service
 
         if(!optionalPriority.isPresent())
         {
-            return false;
+            return Messages.PRIORITY_DOES_NOT_EXIST;
         }
 
         issue.setPriority(optionalPriority.get());
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean changeIssueLabel(int boardId, int issueId, String labelText, String colour, String accountUsername)
+    public String changeIssueLabel(int boardId, int issueId, String labelText, String colour, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         if(colour.length()!=7 || colour.charAt(0)!='#')
@@ -364,19 +365,19 @@ public class Service
 
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean changeIssueCategory(int boardId, int issueId, int categoryId, String accountUsername)
+    public String changeIssueCategory(int boardId, int issueId, int categoryId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -385,25 +386,25 @@ public class Service
 
         if(!optionalCategory.isPresent())
         {
-            return false;
+            return Messages.CATEGORY_DOES_NOT_EXIST;
         }
 
         issue.setCategory(optionalCategory.get());
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean changeIssueTitle(int boardId, int issueId, String title, String accountUsername)
+    public String changeIssueTitle(int boardId, int issueId, String title, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -411,19 +412,19 @@ public class Service
         issue.setTitle(title);
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean changeIssueText(int boardId, int issueId, String text, String accountUsername)
+    public String changeIssueText(int boardId, int issueId, String text, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -431,40 +432,40 @@ public class Service
         issue.setText(text);
         issueRepository.save(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean deleteIssue(int boardId, int issueId, String accountUsername)
+    public String deleteIssue(int boardId, int issueId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         if(!isIssuePartOfBoard(issueId,boardId))
         {
-            return false;
+            return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
 
         issueRepository.delete(issue);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean deleteBoard(int boardId, String ownerUsername)
+    public String deleteBoard(int boardId, String ownerUsername)
     {
         if(!isUserOwnerOfBoard(ownerUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_THE_BOARD_OWNER_;
         }
 
         Optional<Board> optionalBoard=boardRepository.findById(boardId);
 
         if(!optionalBoard.isPresent())
         {
-            return false;
+            return Messages.BOARD_DOES_NOT_EXIST;
         }
 
         Board board=optionalBoard.get();
@@ -481,32 +482,32 @@ public class Service
         board.getUsers().clear();
         boardRepository.save(board);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean deleteUserFromBoard(int boardId, String username, String ownerUsername)
+    public String deleteUserFromBoard(int boardId, String username, String ownerUsername)
     {
         if(!isUserOwnerOfBoard(ownerUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_THE_BOARD_OWNER_;
         }
 
         if(!isUserPartOfBoard(username,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         Optional<User> optionalUser=userRepository.findUserByAccount_Username(username);
 
         if(!optionalUser.isPresent())
         {
-            return false;
+            return Messages.USER_DOES_NOT_EXIST;
         }
 
         removeUserFromBoardIssues(optionalUser.get(),boardId);
         removeUserFromMtmBoard(optionalUser.get(),boardId);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
     private void removeUserFromBoardIssues(User user,int boardId)
@@ -525,48 +526,48 @@ public class Service
         user.getBoards().removeIf((userBoard)->userBoard.getId()==boardId);
     }
 
-    public boolean leaveBoard(int boardId, String accountUsername)
+    public String leaveBoard(int boardId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
-            return false;
+            return Messages.USER_NOT_BOARD_MEMBER;
         }
 
         Optional<User> optionalUser=userRepository.findUserByAccount_Username(accountUsername);
 
         if(!optionalUser.isPresent())
         {
-            return false;
+            return Messages.USER_DOES_NOT_EXIST;
         }
 
         removeUserFromBoardIssues(optionalUser.get(),boardId);
         removeUserFromMtmBoard(optionalUser.get(),boardId);
 
-        return true;
+        return Messages.SUCCESS;
     }
 
-    public boolean register(String username, String password, String name)
+    public String register(String username, String password, String name)
     {
-        if(name.equals(""))
-        {
-            return false;
-        }
-
         if(username.equals(""))
         {
-            return false;
+            return Messages.USERNAME_EMPTY;
         }
 
         if(password.equals(""))
         {
-            return false;
+            return Messages.PASSWORD_EMPTY;
+        }
+
+        if(name.equals(""))
+        {
+            return Messages.NAME_EMPTY;
         }
 
         Optional<Account> optionalAccount=accountRepository.findByUsername(username);
 
         if(optionalAccount.isPresent())
         {
-            return false;
+            return Messages.USERNAME_EXISTS;
         }
 
         Account account=new Account();
@@ -579,6 +580,28 @@ public class Service
 
         userRepository.save(user);
 
-        return true;
+        return Messages.SUCCESS;
+    }
+
+    public String changeName(String name,String accountUsername)
+    {
+        Optional<User> optionalUser=userRepository.findUserByAccount_Username(accountUsername);
+
+        if(!optionalUser.isPresent())
+        {
+            return Messages.USER_DOES_NOT_EXIST;
+        }
+
+        if(name.equals(""))
+        {
+            return Messages.NAME_EMPTY;
+        }
+
+        User user=optionalUser.get();
+
+        user.setName(name);
+        userRepository.save(user);
+
+        return Messages.SUCCESS;
     }
 }

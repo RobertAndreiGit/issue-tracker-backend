@@ -4,6 +4,7 @@ import all.domain.*;
 import all.request_handler.request_entities.*;
 import all.request_handler.response_entities.BoardResponseEntity;
 import all.request_handler.response_entities.IssueResponseEntity;
+import all.request_handler.response_entities.MessageResponseEntity;
 import all.request_handler.response_entities.UserResponseEntity;
 import all.service.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +56,9 @@ public class RequestListener
     }
 
     @DeleteMapping("/board/{boardId}")
-    public boolean deleteBoard(@PathVariable(name="boardId") int boardId)
+    public MessageResponseEntity deleteBoard(@PathVariable(name="boardId") int boardId)
     {
-        return service.deleteBoard(boardId,getAccountUsername());
+        return new MessageResponseEntity(service.deleteBoard(boardId,getAccountUsername()));
     }
 
     @GetMapping("/board/stages")
@@ -76,21 +77,21 @@ public class RequestListener
     }
 
     @PostMapping("/board/users/add")
-    public int addUserToBoard(@RequestBody AddUserToBoardRequestEntity requestEntity)
+    public MessageResponseEntity addUserToBoard(@RequestBody AddUserToBoardRequestEntity requestEntity)
     {
-        return service.addUserToBoard(requestEntity.getIdBoard(),requestEntity.getUsername(),getAccountUsername());
+        return new MessageResponseEntity(service.addUserToBoard(requestEntity.getIdBoard(),requestEntity.getUsername(),getAccountUsername()));
     }
 
     @DeleteMapping("/board/{boardId}/users/delete/{username}")
-    public boolean deleteUserFromBoard(@PathVariable(name="boardId") int boardId,@PathVariable(name="username") String username)
+    public MessageResponseEntity deleteUserFromBoard(@PathVariable(name="boardId") int boardId,@PathVariable(name="username") String username)
     {
-        return service.deleteUserFromBoard(boardId,username,getAccountUsername());
+        return new MessageResponseEntity(service.deleteUserFromBoard(boardId,username,getAccountUsername()));
     }
 
     @DeleteMapping("/board/{boardId}/users/leave")
-    public boolean leaveBoard(@PathVariable(name="boardId") int boardId)
+    public MessageResponseEntity leaveBoard(@PathVariable(name="boardId") int boardId)
     {
-        return service.leaveBoard(boardId,getAccountUsername());
+        return new MessageResponseEntity(service.leaveBoard(boardId,getAccountUsername()));
     }
 
     @GetMapping("/board/{boardId}/issues")
@@ -119,9 +120,9 @@ public class RequestListener
     }
 
     @GetMapping("/board/{boardId}/issues/{issueId}/take")
-    public boolean takeIssue(@PathVariable(name="boardId") int boardId, @PathVariable(name="issueId") int issueId)
+    public MessageResponseEntity takeIssue(@PathVariable(name="boardId") int boardId, @PathVariable(name="issueId") int issueId)
     {
-        return service.takeIssue(boardId,issueId,getAccountUsername());
+        return new MessageResponseEntity(service.takeIssue(boardId,issueId,getAccountUsername()));
     }
 
     @GetMapping("/board/issues/priorities")
@@ -137,63 +138,69 @@ public class RequestListener
     }
 
     @PostMapping("/board/issues/create")
-    public boolean createIssue(@RequestBody AddIssueRequestEntity entity)
+    public MessageResponseEntity createIssue(@RequestBody AddIssueRequestEntity entity)
     {
-        return service.createIssue(entity,getAccountUsername());
+        return new MessageResponseEntity(service.createIssue(entity,getAccountUsername()));
     }
 
     @PostMapping("/board/issues/storyPoints/change")
-    public boolean changeStoryPoints(@RequestBody ChangeIssueStoryPointsRequestEntity entity)
+    public MessageResponseEntity changeStoryPoints(@RequestBody ChangeIssueStoryPointsRequestEntity entity)
     {
-        return service.changeStoryPoints(entity.getBoardId(),entity.getIssueId(),entity.getValue(),getAccountUsername());
+        return new MessageResponseEntity(service.changeStoryPoints(entity.getBoardId(),entity.getIssueId(),entity.getValue(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/priority/change")
-    public boolean changeIssuePriority(@RequestBody ChangeIssuePriorityRequestEntity entity)
+    public MessageResponseEntity changeIssuePriority(@RequestBody ChangeIssuePriorityRequestEntity entity)
     {
-        return service.changePriority(entity.getBoardId(),entity.getIssueId(),entity.getPriorityId(),getAccountUsername());
+        return new MessageResponseEntity(service.changePriority(entity.getBoardId(),entity.getIssueId(),entity.getPriorityId(),getAccountUsername()));
     }
 
 
     @PostMapping("/board/issues/stage/change")
-    public boolean changeIssueStage(ChangeIssueStageRequestEntity entity)
+    public MessageResponseEntity changeIssueStage(ChangeIssueStageRequestEntity entity)
     {
-        return service.changeIssueStage(entity.getBoardId(),entity.getIssueId(),entity.getStageId(),getAccountUsername());
+        return new MessageResponseEntity(service.changeIssueStage(entity.getBoardId(),entity.getIssueId(),entity.getStageId(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/category/change")
-    public boolean changeIssueCategory(ChangeIssueCategoryRequestEntity entity)
+    public MessageResponseEntity changeIssueCategory(ChangeIssueCategoryRequestEntity entity)
     {
-        return service.changeIssueCategory(entity.getBoardId(),entity.getIssueId(),entity.getCategoryId(),getAccountUsername());
+        return new MessageResponseEntity(service.changeIssueCategory(entity.getBoardId(),entity.getIssueId(),entity.getCategoryId(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/label/change")
-    public boolean changeIssueLabel(ChangeIssueLabelRequestEntity entity)
+    public MessageResponseEntity changeIssueLabel(ChangeIssueLabelRequestEntity entity)
     {
-        return service.changeIssueLabel(entity.getBoardId(),entity.getIssueId(),entity.getLabel(),entity.getColour(),getAccountUsername());
+        return new MessageResponseEntity(service.changeIssueLabel(entity.getBoardId(),entity.getIssueId(),entity.getLabel(),entity.getColour(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/title/change")
-    public boolean changeIssueTitle(ChangeIssueTitleRequestEntity entity)
+    public MessageResponseEntity changeIssueTitle(ChangeIssueTitleRequestEntity entity)
     {
-        return service.changeIssueTitle(entity.getBoardId(),entity.getIssueId(),entity.getTitle(),getAccountUsername());
+        return new MessageResponseEntity(service.changeIssueTitle(entity.getBoardId(),entity.getIssueId(),entity.getTitle(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/text/change")
-    public boolean changeIssueText(ChangeIssueTextRequestEntity entity)
+    public MessageResponseEntity changeIssueText(ChangeIssueTextRequestEntity entity)
     {
-        return service.changeIssueText(entity.getBoardId(),entity.getIssueId(),entity.getText(),getAccountUsername());
+        return new MessageResponseEntity(service.changeIssueText(entity.getBoardId(),entity.getIssueId(),entity.getText(),getAccountUsername()));
     }
 
     @DeleteMapping("/board/{boardId}/issues/{issueId}")
-    public boolean deleteIssue(@PathVariable(name="boardId") int boardId,@PathVariable(name="issueId") int issueId)
+    public MessageResponseEntity deleteIssue(@PathVariable(name="boardId") int boardId,@PathVariable(name="issueId") int issueId)
     {
-        return service.deleteIssue(boardId,issueId,getAccountUsername());
+        return new MessageResponseEntity(service.deleteIssue(boardId,issueId,getAccountUsername()));
     }
 
     @PostMapping("/register")
-    public boolean register(@RequestBody RegisterRequestEntity entity)
+    public MessageResponseEntity register(@RequestBody RegisterRequestEntity entity)
     {
-        return service.register(entity.getUsername(),entity.getPassword(),entity.getName());
+        return new MessageResponseEntity(service.register(entity.getUsername(),entity.getPassword(),entity.getName()));
+    }
+
+    @PostMapping("/user/change/name")
+    public MessageResponseEntity changeName(@RequestBody String name)
+    {
+        return new MessageResponseEntity(service.changeName(name,getAccountUsername()));
     }
 }
