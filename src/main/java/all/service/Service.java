@@ -479,9 +479,6 @@ public class Service
             userRepository.save(user);
         }
 
-        board.getUsers().clear();
-        boardRepository.save(board);
-
         return Messages.SUCCESS;
     }
 
@@ -520,9 +517,6 @@ public class Service
 
     private void removeUserFromMtmBoard(User user,int boardId)
     {
-        Board board=boardRepository.findById(boardId).get();
-
-        board.getUsers().removeIf((boardUser)->boardUser.getId()==user.getId());
         user.getBoards().removeIf((userBoard)->userBoard.getId()==boardId);
     }
 

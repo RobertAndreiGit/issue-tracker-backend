@@ -18,11 +18,7 @@ public class Board
     @JoinColumn(name="owner", nullable=false)
     private User owner;
 
-    @ManyToMany(cascade=CascadeType.MERGE)
-    @JoinTable(
-            name = "users",
-            joinColumns = @JoinColumn(name = "board"),
-            inverseJoinColumns = @JoinColumn(name = "user"))
+    @ManyToMany(mappedBy = "boards")
     private List<User> users;
 
     public Board(){}

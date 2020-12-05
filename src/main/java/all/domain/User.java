@@ -20,7 +20,7 @@ public class User
 
     @ManyToMany(fetch=FetchType.LAZY,cascade=CascadeType.MERGE)
     @JoinTable(
-            name = "boards",
+            name = "boards_users",
             joinColumns = @JoinColumn(name = "user"),
             inverseJoinColumns = @JoinColumn(name = "board"))
     private List<Board> boards;
