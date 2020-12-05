@@ -1,6 +1,8 @@
 package all.request_handler.response_entities;
 
-public class MessageResponseEntity
+import java.io.Serializable;
+
+public class MessageResponseEntity implements Serializable
 {
     private String message;
 

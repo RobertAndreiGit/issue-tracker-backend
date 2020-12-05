@@ -1,6 +1,8 @@
 package all.request_handler.response_entities;
 
-public class UserResponseEntity
+import java.io.Serializable;
+
+public class UserResponseEntity implements Serializable
 {
     private String username;
     private String name;

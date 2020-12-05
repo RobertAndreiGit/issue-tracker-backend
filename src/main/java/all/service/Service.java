@@ -78,10 +78,15 @@ public class Service
             return -1;
         }
 
+        User user=optionalUser.get();
+
         Board board=new Board();
         board.setName(name);
-        board.setOwner(optionalUser.get());
+        board.setOwner(user);
         Board savedBoard=boardRepository.save(board);
+
+        user.getBoards().add(board);
+        userRepository.save(user);
 
         return savedBoard.getId();
     }
@@ -90,7 +95,7 @@ public class Service
     {
         if(!isUserOwnerOfBoard(ownerUsername,boardId))
         {
-            return Messages.USER_NOT_THE_BOARD_OWNER_;
+            return Messages.USER_NOT_THE_BOARD_OWNER;
         }
 
         Optional<User> optionalUser=userRepository.findUserByAccount_Username(username);
@@ -101,6 +106,13 @@ public class Service
         }
 
         Board board=boardRepository.findById(boardId).get();
+
+        Optional<User> optionalExistentUser=board.getUsers().stream().filter((user)->user.getAccount().getUsername().equals(username)).findFirst();
+
+        if(optionalExistentUser.isPresent())
+        {
+            return Messages.USER_ALREADY_MEMBER_OF_BOARD;
+        }
 
         User user=optionalUser.get();
         user.getBoards().add(board);
@@ -223,6 +235,11 @@ public class Service
         if(!optionalPriority.isPresent())
         {
             return Messages.PRIORITY_DOES_NOT_EXIST;
+        }
+
+        if(entity.getLabelColour().length()!=7 || entity.getLabelColour().charAt(0)!='#')
+        {
+            entity.setLabelColour("#FFFFFF");
         }
 
         Issue issue=new Issue();
@@ -458,7 +475,7 @@ public class Service
     {
         if(!isUserOwnerOfBoard(ownerUsername,boardId))
         {
-            return Messages.USER_NOT_THE_BOARD_OWNER_;
+            return Messages.USER_NOT_THE_BOARD_OWNER;
         }
 
         Optional<Board> optionalBoard=boardRepository.findById(boardId);
@@ -479,6 +496,8 @@ public class Service
             userRepository.save(user);
         }
 
+        boardRepository.delete(board);
+
         return Messages.SUCCESS;
     }
 
@@ -486,12 +505,17 @@ public class Service
     {
         if(!isUserOwnerOfBoard(ownerUsername,boardId))
         {
-            return Messages.USER_NOT_THE_BOARD_OWNER_;
+            return Messages.USER_NOT_THE_BOARD_OWNER;
         }
 
         if(!isUserPartOfBoard(username,boardId))
         {
             return Messages.USER_NOT_BOARD_MEMBER;
+        }
+
+        if(isUserOwnerOfBoard(username,boardId))
+        {
+            return Messages.CANT_DELETE_OWNER;
         }
 
         Optional<User> optionalUser=userRepository.findUserByAccount_Username(username);
@@ -501,8 +525,12 @@ public class Service
             return Messages.USER_DOES_NOT_EXIST;
         }
 
-        removeUserFromBoardIssues(optionalUser.get(),boardId);
-        removeUserFromMtmBoard(optionalUser.get(),boardId);
+        User user=optionalUser.get();
+
+        removeUserFromBoardIssues(user,boardId);
+        removeUserFromMtmBoard(user,boardId);
+
+        userRepository.save(user);
 
         return Messages.SUCCESS;
     }
@@ -534,8 +562,17 @@ public class Service
             return Messages.USER_DOES_NOT_EXIST;
         }
 
-        removeUserFromBoardIssues(optionalUser.get(),boardId);
-        removeUserFromMtmBoard(optionalUser.get(),boardId);
+        if(isUserOwnerOfBoard(accountUsername,boardId))
+        {
+            return Messages.CANT_DELETE_OWNER;
+        }
+
+        User user=optionalUser.get();
+
+        removeUserFromBoardIssues(user,boardId);
+        removeUserFromMtmBoard(user,boardId);
+
+        userRepository.save(user);
 
         return Messages.SUCCESS;
     }

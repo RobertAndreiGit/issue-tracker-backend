@@ -5,7 +5,9 @@ import all.domain.Label;
 import all.domain.Priority;
 import all.domain.Stage;
 
-public class IssueResponseEntity
+import java.io.Serializable;
+
+public class IssueResponseEntity implements Serializable
 {
     private int id;
     private String title;

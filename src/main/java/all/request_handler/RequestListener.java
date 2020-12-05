@@ -50,9 +50,9 @@ public class RequestListener
     }
 
     @PostMapping("/board/create")
-    public int createBoard(@RequestBody String name)
+    public int createBoard(@RequestBody CreateBoardRequestEntity entity)
     {
-        return service.createBoard(name,getAccountUsername());
+        return service.createBoard(entity.getName(),getAccountUsername());
     }
 
     @DeleteMapping("/board/{boardId}")
@@ -79,7 +79,7 @@ public class RequestListener
     @PostMapping("/board/users/add")
     public MessageResponseEntity addUserToBoard(@RequestBody AddUserToBoardRequestEntity requestEntity)
     {
-        return new MessageResponseEntity(service.addUserToBoard(requestEntity.getIdBoard(),requestEntity.getUsername(),getAccountUsername()));
+        return new MessageResponseEntity(service.addUserToBoard(requestEntity.getBoardId(),requestEntity.getUsername(),getAccountUsername()));
     }
 
     @DeleteMapping("/board/{boardId}/users/delete/{username}")
@@ -110,7 +110,18 @@ public class RequestListener
             Board board=issue.getBoard();
             UserResponseEntity boardOwner=new UserResponseEntity(board.getOwner().getAccount().getUsername(),board.getOwner().getName());
             BoardResponseEntity boardResponseEntity=new BoardResponseEntity(board.getId(),board.getName(),boardOwner);
-            UserResponseEntity user=new UserResponseEntity(issue.getUser().getAccount().getUsername(),issue.getUser().getName());
+            UserResponseEntity user=new UserResponseEntity();
+
+            if(issue.getUser()!=null)
+            {
+                user.setUsername(issue.getUser().getAccount().getUsername());
+                user.setName(issue.getUser().getName());
+            }
+            else
+            {
+                user.setUsername("");
+                user.setName("");
+            }
 
             responseIssueList.add(new IssueResponseEntity(issue.getId(),issue.getTitle(),issue.getText(),issue.getStoryPoints(),boardResponseEntity,
                                     user,issue.getLabel(),issue.getCategory(),issue.getStage(),issue.getPriority()));
@@ -157,31 +168,31 @@ public class RequestListener
 
 
     @PostMapping("/board/issues/stage/change")
-    public MessageResponseEntity changeIssueStage(ChangeIssueStageRequestEntity entity)
+    public MessageResponseEntity changeIssueStage(@RequestBody ChangeIssueStageRequestEntity entity)
     {
         return new MessageResponseEntity(service.changeIssueStage(entity.getBoardId(),entity.getIssueId(),entity.getStageId(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/category/change")
-    public MessageResponseEntity changeIssueCategory(ChangeIssueCategoryRequestEntity entity)
+    public MessageResponseEntity changeIssueCategory(@RequestBody ChangeIssueCategoryRequestEntity entity)
     {
         return new MessageResponseEntity(service.changeIssueCategory(entity.getBoardId(),entity.getIssueId(),entity.getCategoryId(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/label/change")
-    public MessageResponseEntity changeIssueLabel(ChangeIssueLabelRequestEntity entity)
+    public MessageResponseEntity changeIssueLabel(@RequestBody ChangeIssueLabelRequestEntity entity)
     {
         return new MessageResponseEntity(service.changeIssueLabel(entity.getBoardId(),entity.getIssueId(),entity.getLabel(),entity.getColour(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/title/change")
-    public MessageResponseEntity changeIssueTitle(ChangeIssueTitleRequestEntity entity)
+    public MessageResponseEntity changeIssueTitle(@RequestBody ChangeIssueTitleRequestEntity entity)
     {
         return new MessageResponseEntity(service.changeIssueTitle(entity.getBoardId(),entity.getIssueId(),entity.getTitle(),getAccountUsername()));
     }
 
     @PostMapping("/board/issues/text/change")
-    public MessageResponseEntity changeIssueText(ChangeIssueTextRequestEntity entity)
+    public MessageResponseEntity changeIssueText(@RequestBody ChangeIssueTextRequestEntity entity)
     {
         return new MessageResponseEntity(service.changeIssueText(entity.getBoardId(),entity.getIssueId(),entity.getText(),getAccountUsername()));
     }
@@ -199,8 +210,8 @@ public class RequestListener
     }
 
     @PostMapping("/user/change/name")
-    public MessageResponseEntity changeName(@RequestBody String name)
+    public MessageResponseEntity changeName(@RequestBody ChangeNameRequestEntity entity)
     {
-        return new MessageResponseEntity(service.changeName(name,getAccountUsername()));
+        return new MessageResponseEntity(service.changeName(entity.getName(),getAccountUsername()));
     }
 }

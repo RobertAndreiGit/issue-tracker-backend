@@ -1,6 +1,8 @@
 package all.request_handler.response_entities;
 
-public class BoardResponseEntity
+import java.io.Serializable;
+
+public class BoardResponseEntity implements Serializable
 {
     private int id;
     private String name;

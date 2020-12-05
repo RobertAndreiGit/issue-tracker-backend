@@ -2,25 +2,25 @@ package all.request_handler.request_entities;
 
 public class AddUserToBoardRequestEntity
 {
-    private int idBoard;
+    private int boardId;
     private String username;
 
     public AddUserToBoardRequestEntity(){}
 
-    public AddUserToBoardRequestEntity(int idBoard, String username)
+    public AddUserToBoardRequestEntity(int boardId, String username)
     {
-        this.idBoard = idBoard;
+        this.boardId = boardId;
         this.username = username;
     }
 
-    public int getIdBoard()
+    public int getBoardId()
     {
-        return idBoard;
+        return boardId;
     }
 
-    public void setIdBoard(int idBoard)
+    public void setBoardId(int boardId)
     {
-        this.idBoard = idBoard;
+        this.boardId = boardId;
     }
 
     public String getUsername()
