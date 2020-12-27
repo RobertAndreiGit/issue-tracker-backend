@@ -80,6 +80,13 @@ public class Service
 
         User user=optionalUser.get();
 
+        Board foundBoard=user.getBoards().stream().filter((board)->board.getName().equals(name)).findAny().orElse(null);
+
+        if(foundBoard!=null)
+        {
+            return -2;
+        }
+
         Board board=new Board();
         board.setName(name);
         board.setOwner(user);
