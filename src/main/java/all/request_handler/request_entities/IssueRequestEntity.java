@@ -1,7 +1,8 @@
 package all.request_handler.request_entities;
 
-public class AddIssueRequestEntity
+public class IssueRequestEntity
 {
+    private int id;
     private String title;
     private String text;
     private int boardId;
@@ -12,10 +13,11 @@ public class AddIssueRequestEntity
     private int priorityId;
     private int storyPoints;
 
-    public AddIssueRequestEntity(){}
+    public IssueRequestEntity(){}
 
-    public AddIssueRequestEntity(String title, String text, int boardId, String label, String labelColour, int categoryId, int stageId, int priorityId, int storyPoints)
+    public IssueRequestEntity(int id, String title, String text, int boardId, String label, String labelColour, int categoryId, int stageId, int priorityId, int storyPoints)
     {
+        this.id = id;
         this.title = title;
         this.text = text;
         this.boardId = boardId;
@@ -25,6 +27,16 @@ public class AddIssueRequestEntity
         this.stageId = stageId;
         this.priorityId = priorityId;
         this.storyPoints = storyPoints;
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 
     public String getTitle()

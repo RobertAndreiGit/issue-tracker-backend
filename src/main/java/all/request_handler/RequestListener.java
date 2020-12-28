@@ -149,9 +149,15 @@ public class RequestListener
     }
 
     @PostMapping("/board/issues/create")
-    public MessageResponseEntity createIssue(@RequestBody AddIssueRequestEntity entity)
+    public MessageResponseEntity createIssue(@RequestBody IssueRequestEntity entity)
     {
         return new MessageResponseEntity(service.createIssue(entity,getAccountUsername()));
+    }
+
+    @PostMapping("/board/issues/change")
+    public MessageResponseEntity changeIssue(@RequestBody IssueRequestEntity entity)
+    {
+        return new MessageResponseEntity(service.changeIssue(entity,getAccountUsername()));
     }
 
     @PostMapping("/board/issues/storyPoints/change")

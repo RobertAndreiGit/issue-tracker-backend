@@ -2,14 +2,12 @@ package all.service;
 
 import all.domain.*;
 import all.repository.*;
-import all.request_handler.request_entities.AddIssueRequestEntity;
+import all.request_handler.request_entities.IssueRequestEntity;
 import all.request_handler.response_entities.utils.Messages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
@@ -216,7 +214,7 @@ public class Service
         return priorityRepository.findAll();
     }
 
-    public String createIssue(AddIssueRequestEntity entity, String accountUsername)
+    public String createIssue(IssueRequestEntity entity, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,entity.getBoardId()))
         {
@@ -279,7 +277,107 @@ public class Service
         return Messages.SUCCESS;
     }
 
-    public String changeIssueStage(int boardId, int issueId, int stageId, String accountUsername)
+
+    public String changeIssue(IssueRequestEntity entity, String accountUsername)
+    {
+        String messageTitle=Messages.SUCCESS;
+        String messageText=Messages.SUCCESS;
+        String messageCategory=Messages.SUCCESS;
+        String messageStage=Messages.SUCCESS;
+        String messageLabel=Messages.SUCCESS;
+        String messageStoryPoints=Messages.SUCCESS;
+
+        if(entity.getTitle()!=null)
+        {
+            messageTitle=checkTitle(entity.getBoardId(), entity.getId(), accountUsername);
+        }
+
+        if(entity.getText()!=null)
+        {
+            messageText=checkText(entity.getBoardId(), entity.getId(), accountUsername);
+        }
+
+        if(entity.getCategoryId()!=0)
+        {
+            messageCategory=checkCategory(entity.getBoardId(), entity.getId(), entity.getCategoryId(), accountUsername);
+        }
+
+        if(entity.getStageId()!=0)
+        {
+            messageStage=checkStage(entity.getBoardId(), entity.getId(), entity.getStageId(), accountUsername);
+        }
+
+        if(entity.getLabelColour()!=null && entity.getLabelColour()!=null)
+        {
+            messageLabel=checkLabel(entity.getBoardId(), entity.getId(), accountUsername);
+        }
+
+        if(entity.getStoryPoints()!=0)
+        {
+            messageStoryPoints=checkStoryPoints(entity.getBoardId(), entity.getId(), accountUsername);
+        }
+
+        String message=getResultMessage(messageTitle,messageText,messageCategory,messageStage,messageLabel,messageStoryPoints);
+
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
+        }
+
+        changeIssueTitle(entity.getBoardId(), entity.getId(), entity.getTitle(), accountUsername);
+        changeIssueText(entity.getBoardId(),entity.getId(),entity.getText(),accountUsername);
+        changeIssueCategory(entity.getBoardId(), entity.getId(), entity.getCategoryId(), accountUsername);
+        changeIssueStage(entity.getBoardId(), entity.getId(), entity.getStageId(), accountUsername);
+        changeIssueLabel(entity.getBoardId(), entity.getId(), entity.getLabel(), entity.getLabelColour(), accountUsername);
+        changeStoryPoints(entity.getBoardId(), entity.getId(), entity.getStoryPoints(), accountUsername);
+
+        return message;
+    }
+
+    private String getResultMessage(String messageTitle,String messageText,String messageCategory,String messageStage,String messageLabel,String messageStoryPoints)
+    {
+        Set<String> errorMessages=new HashSet<>();
+
+        if(!messageTitle.equals(Messages.SUCCESS))
+        {
+            errorMessages.add(messageTitle);
+        }
+
+        if(!messageText.equals(Messages.SUCCESS))
+        {
+            errorMessages.add(messageText);
+        }
+
+        if(!messageCategory.equals(Messages.SUCCESS))
+        {
+            errorMessages.add(messageCategory);
+        }
+
+        if(!messageStage.equals(Messages.SUCCESS))
+        {
+            errorMessages.add(messageStage);
+        }
+
+        if(!messageLabel.equals(Messages.SUCCESS))
+        {
+            errorMessages.add(messageLabel);
+        }
+
+        if(!messageStoryPoints.equals(Messages.SUCCESS))
+        {
+            errorMessages.add(messageLabel);
+        }
+
+        if(errorMessages.size()==0)
+        {
+            return Messages.SUCCESS;
+        }
+
+        return errorMessages.stream().reduce("",(partialString,element)->partialString+element);
+    }
+
+    private String checkStage(int boardId, int issueId, int stageId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
@@ -290,8 +388,6 @@ public class Service
         {
             return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
-
-        Issue issue =issueRepository.findById(issueId).get();
 
         Optional<Stage> optionalStage=stageRepository.findById(stageId);
 
@@ -300,13 +396,28 @@ public class Service
             return Messages.STAGE_DOES_NOT_EXIST;
         }
 
-        issue.setStage(optionalStage.get());
-        issueRepository.save(issue);
-
         return Messages.SUCCESS;
     }
 
-    public String changeStoryPoints(int boardId, int issueId, int value, String accountUsername)
+    public String changeIssueStage(int boardId, int issueId, int stageId, String accountUsername)
+    {
+        String message=checkStage(boardId,issueId,stageId,accountUsername);
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
+        }
+
+        Issue issue=issueRepository.findById(issueId).get();
+        Optional<Stage> optionalStage=stageRepository.findById(stageId);
+
+        issue.setStage(optionalStage.get());
+        issueRepository.save(issue);
+
+        return message;
+    }
+
+    private String checkStoryPoints(int boardId, int issueId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
@@ -316,6 +427,17 @@ public class Service
         if(!isIssuePartOfBoard(issueId,boardId))
         {
             return Messages.ISSUE_NOT_PART_OF_BOARD;
+        }
+
+        return Messages.SUCCESS;
+    }
+    public String changeStoryPoints(int boardId, int issueId, int value, String accountUsername)
+    {
+        String message=checkStoryPoints(boardId,issueId,accountUsername);
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -323,10 +445,10 @@ public class Service
         issue.setStoryPoints(value);
         issueRepository.save(issue);
 
-        return Messages.SUCCESS;
+        return message;
     }
 
-    public String changePriority(int boardId, int issueId, int priorityId, String accountUsername)
+    private String checkPriority(int boardId, int issueId, int priorityId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
@@ -337,8 +459,6 @@ public class Service
         {
             return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
-
-        Issue issue =issueRepository.findById(issueId).get();
 
         Optional<Priority> optionalPriority=priorityRepository.findById(priorityId);
 
@@ -347,13 +467,29 @@ public class Service
             return Messages.PRIORITY_DOES_NOT_EXIST;
         }
 
-        issue.setPriority(optionalPriority.get());
-        issueRepository.save(issue);
-
         return Messages.SUCCESS;
     }
 
-    public String changeIssueLabel(int boardId, int issueId, String labelText, String colour, String accountUsername)
+    public String changePriority(int boardId, int issueId, int priorityId, String accountUsername)
+    {
+        String message=checkPriority(boardId,issueId,priorityId,accountUsername);
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
+        }
+
+        Issue issue =issueRepository.findById(issueId).get();
+
+        Optional<Priority> optionalPriority=priorityRepository.findById(priorityId);
+
+        issue.setPriority(optionalPriority.get());
+        issueRepository.save(issue);
+
+        return message;
+    }
+
+    private String checkLabel(int boardId, int issueId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
@@ -363,6 +499,18 @@ public class Service
         if(!isIssuePartOfBoard(issueId,boardId))
         {
             return Messages.ISSUE_NOT_PART_OF_BOARD;
+        }
+
+        return Messages.SUCCESS;
+    }
+
+    public String changeIssueLabel(int boardId, int issueId, String labelText, String colour, String accountUsername)
+    {
+        String message=checkLabel(boardId,issueId,accountUsername);
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
         }
 
         if(colour.length()!=7 || colour.charAt(0)!='#')
@@ -389,10 +537,10 @@ public class Service
 
         issueRepository.save(issue);
 
-        return Messages.SUCCESS;
+        return message;
     }
 
-    public String changeIssueCategory(int boardId, int issueId, int categoryId, String accountUsername)
+    private String checkCategory(int boardId, int issueId, int categoryId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
@@ -403,8 +551,6 @@ public class Service
         {
             return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
-
-        Issue issue =issueRepository.findById(issueId).get();
 
         Optional<Category> optionalCategory=categoryRepository.findById(categoryId);
 
@@ -413,13 +559,29 @@ public class Service
             return Messages.CATEGORY_DOES_NOT_EXIST;
         }
 
-        issue.setCategory(optionalCategory.get());
-        issueRepository.save(issue);
-
         return Messages.SUCCESS;
     }
 
-    public String changeIssueTitle(int boardId, int issueId, String title, String accountUsername)
+    public String changeIssueCategory(int boardId, int issueId, int categoryId, String accountUsername)
+    {
+        String message=checkCategory(boardId,issueId,categoryId,accountUsername);
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
+        }
+
+        Issue issue =issueRepository.findById(issueId).get();
+
+        Optional<Category> optionalCategory=categoryRepository.findById(categoryId);
+
+        issue.setCategory(optionalCategory.get());
+        issueRepository.save(issue);
+
+        return message;
+    }
+
+    private String checkTitle(int boardId, int issueId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
@@ -429,6 +591,18 @@ public class Service
         if(!isIssuePartOfBoard(issueId,boardId))
         {
             return Messages.ISSUE_NOT_PART_OF_BOARD;
+        }
+
+        return Messages.SUCCESS;
+    }
+
+    public String changeIssueTitle(int boardId, int issueId, String title, String accountUsername)
+    {
+        String message=checkTitle(boardId,issueId,accountUsername);
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
         }
 
         Issue issue =issueRepository.findById(issueId).get();
@@ -436,10 +610,10 @@ public class Service
         issue.setTitle(title);
         issueRepository.save(issue);
 
-        return Messages.SUCCESS;
+        return message;
     }
 
-    public String changeIssueText(int boardId, int issueId, String text, String accountUsername)
+    private String checkText(int boardId, int issueId, String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
@@ -451,12 +625,24 @@ public class Service
             return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
+        return Messages.SUCCESS;
+    }
+
+    public String changeIssueText(int boardId, int issueId, String text, String accountUsername)
+    {
+        String message=checkText(boardId,issueId,accountUsername);
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
+        }
+
         Issue issue =issueRepository.findById(issueId).get();
 
         issue.setText(text);
         issueRepository.save(issue);
 
-        return Messages.SUCCESS;
+        return message;
     }
 
     public String deleteIssue(int boardId, int issueId, String accountUsername)
