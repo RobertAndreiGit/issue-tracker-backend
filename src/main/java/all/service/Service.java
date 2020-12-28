@@ -287,34 +287,47 @@ public class Service
         String messageLabel=Messages.SUCCESS;
         String messageStoryPoints=Messages.SUCCESS;
 
+        boolean changeTitle=false;
+        boolean changeText=false;
+        boolean changeCategory=false;
+        boolean changeStage=false;
+        boolean changeLabel=false;
+        boolean changeStrotyPoints=false;
+
         if(entity.getTitle()!=null)
         {
             messageTitle=checkTitle(entity.getBoardId(), entity.getId(), accountUsername);
+            changeTitle=true;
         }
 
         if(entity.getText()!=null)
         {
             messageText=checkText(entity.getBoardId(), entity.getId(), accountUsername);
+            changeText=true;
         }
 
         if(entity.getCategoryId()!=0)
         {
             messageCategory=checkCategory(entity.getBoardId(), entity.getId(), entity.getCategoryId(), accountUsername);
+            changeCategory=true;
         }
 
         if(entity.getStageId()!=0)
         {
             messageStage=checkStage(entity.getBoardId(), entity.getId(), entity.getStageId(), accountUsername);
+            changeStage=true;
         }
 
         if(entity.getLabelColour()!=null && entity.getLabelColour()!=null)
         {
             messageLabel=checkLabel(entity.getBoardId(), entity.getId(), accountUsername);
+            changeLabel=true;
         }
 
         if(entity.getStoryPoints()!=0)
         {
             messageStoryPoints=checkStoryPoints(entity.getBoardId(), entity.getId(), accountUsername);
+            changeStrotyPoints=true;
         }
 
         String message=getResultMessage(messageTitle,messageText,messageCategory,messageStage,messageLabel,messageStoryPoints);
@@ -325,12 +338,35 @@ public class Service
             return message;
         }
 
-        changeIssueTitle(entity.getBoardId(), entity.getId(), entity.getTitle(), accountUsername);
-        changeIssueText(entity.getBoardId(),entity.getId(),entity.getText(),accountUsername);
-        changeIssueCategory(entity.getBoardId(), entity.getId(), entity.getCategoryId(), accountUsername);
-        changeIssueStage(entity.getBoardId(), entity.getId(), entity.getStageId(), accountUsername);
-        changeIssueLabel(entity.getBoardId(), entity.getId(), entity.getLabel(), entity.getLabelColour(), accountUsername);
-        changeStoryPoints(entity.getBoardId(), entity.getId(), entity.getStoryPoints(), accountUsername);
+        if(changeTitle)
+        {
+            changeIssueTitle(entity.getBoardId(), entity.getId(), entity.getTitle(), accountUsername);
+        }
+
+        if(changeText)
+        {
+            changeIssueText(entity.getBoardId(), entity.getId(), entity.getText(), accountUsername);
+        }
+
+        if(changeCategory)
+        {
+            changeIssueCategory(entity.getBoardId(), entity.getId(), entity.getCategoryId(), accountUsername);
+        }
+
+        if(changeStage)
+        {
+            changeIssueStage(entity.getBoardId(), entity.getId(), entity.getStageId(), accountUsername);
+        }
+
+        if(changeLabel)
+        {
+            changeIssueLabel(entity.getBoardId(), entity.getId(), entity.getLabel(), entity.getLabelColour(), accountUsername);
+        }
+
+        if(changeStrotyPoints)
+        {
+            changeStoryPoints(entity.getBoardId(), entity.getId(), entity.getStoryPoints(), accountUsername);
+        }
 
         return message;
     }
