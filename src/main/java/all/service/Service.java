@@ -267,6 +267,14 @@ public class Service
             entity.setLabelColour("#FFFFFF");
         }
 
+        User issueTaker=null;
+
+        if(entity.getUsername()!=null)
+        {
+            Optional<User> issueTakerOptional = userRepository.findUserByAccount_Username(entity.getUsername());
+            issueTaker=issueTakerOptional.orElse(null);
+        }
+
         Issue issue=new Issue();
         issue.setTitle(entity.getTitle());
         issue.setText(entity.getText());
@@ -274,7 +282,7 @@ public class Service
         issue.setStage(optionalStage.get());
         issue.setCategory(optionalCategory.get());
         issue.setPriority(optionalPriority.get());
-        issue.setUser(null);
+        issue.setUser(issueTaker);
         issue.setBoard(boardRepository.findById(entity.getBoardId()).get());
 
         Optional<Label> optionalLabel=labelRepository.findByNameAndColour(entity.getLabel(),entity.getLabelColour());
@@ -398,7 +406,7 @@ public class Service
 
         if(changeUser)
         {
-            takeIssue(entity.getBoardId(),entity.getId(),accountUsername);
+            takeIssue(entity.getBoardId(),entity.getId(),entity.getUsername());
         }
 
         return message;
