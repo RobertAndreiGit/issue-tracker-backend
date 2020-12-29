@@ -67,7 +67,7 @@ public class RequestListener
         return service.getStages();
     }
 
-    @GetMapping("/board/{boardId}/participants")
+    @GetMapping("/board/{boardId}/users")
     public List<UserResponseEntity> getBoardParticipants(@PathVariable int boardId)
     {
         List<UserResponseEntity> responseList=new ArrayList<>();
@@ -158,49 +158,6 @@ public class RequestListener
     public MessageResponseEntity changeIssue(@RequestBody IssueRequestEntity entity)
     {
         return new MessageResponseEntity(service.changeIssue(entity,getAccountUsername()));
-    }
-
-    @PostMapping("/board/issues/storyPoints/change")
-    public MessageResponseEntity changeStoryPoints(@RequestBody ChangeIssueStoryPointsRequestEntity entity)
-    {
-        return new MessageResponseEntity(service.changeStoryPoints(entity.getBoardId(),entity.getIssueId(),entity.getValue(),getAccountUsername()));
-    }
-
-    @PostMapping("/board/issues/priority/change")
-    public MessageResponseEntity changeIssuePriority(@RequestBody ChangeIssuePriorityRequestEntity entity)
-    {
-        return new MessageResponseEntity(service.changePriority(entity.getBoardId(),entity.getIssueId(),entity.getPriorityId(),getAccountUsername()));
-    }
-
-
-    @PostMapping("/board/issues/stage/change")
-    public MessageResponseEntity changeIssueStage(@RequestBody ChangeIssueStageRequestEntity entity)
-    {
-        return new MessageResponseEntity(service.changeIssueStage(entity.getBoardId(),entity.getIssueId(),entity.getStageId(),getAccountUsername()));
-    }
-
-    @PostMapping("/board/issues/category/change")
-    public MessageResponseEntity changeIssueCategory(@RequestBody ChangeIssueCategoryRequestEntity entity)
-    {
-        return new MessageResponseEntity(service.changeIssueCategory(entity.getBoardId(),entity.getIssueId(),entity.getCategoryId(),getAccountUsername()));
-    }
-
-    @PostMapping("/board/issues/label/change")
-    public MessageResponseEntity changeIssueLabel(@RequestBody ChangeIssueLabelRequestEntity entity)
-    {
-        return new MessageResponseEntity(service.changeIssueLabel(entity.getBoardId(),entity.getIssueId(),entity.getLabel(),entity.getColour(),getAccountUsername()));
-    }
-
-    @PostMapping("/board/issues/title/change")
-    public MessageResponseEntity changeIssueTitle(@RequestBody ChangeIssueTitleRequestEntity entity)
-    {
-        return new MessageResponseEntity(service.changeIssueTitle(entity.getBoardId(),entity.getIssueId(),entity.getTitle(),getAccountUsername()));
-    }
-
-    @PostMapping("/board/issues/text/change")
-    public MessageResponseEntity changeIssueText(@RequestBody ChangeIssueTextRequestEntity entity)
-    {
-        return new MessageResponseEntity(service.changeIssueText(entity.getBoardId(),entity.getIssueId(),entity.getText(),getAccountUsername()));
     }
 
     @DeleteMapping("/board/{boardId}/issues/{issueId}")
