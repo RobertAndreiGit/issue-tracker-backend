@@ -67,6 +67,12 @@ public class Service
         return optionalUser.isPresent();
     }
 
+    public User getUser(String accountUsername)
+    {
+        Optional<User> user=userRepository.findUserByAccount_Username(accountUsername);
+        return user.orElse(null);
+    }
+
     public int createBoard(String name, String ownerUsername)
     {
         Optional<User> optionalUser=userRepository.findUserByAccount_Username(ownerUsername);

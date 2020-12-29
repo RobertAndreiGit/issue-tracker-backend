@@ -37,6 +37,19 @@ public class RequestListener
         }
     }
 
+    @GetMapping("/current_user")
+    public UserResponseEntity getCurrentUser()
+    {
+        User user=service.getUser(getAccountUsername());
+
+        if(user==null)
+        {
+            return null;
+        }
+
+        return new UserResponseEntity(user.getAccount().getUsername(),user.getName());
+    }
+
     @GetMapping("/boards")
     public List<BoardResponseEntity> getBoards()
     {
