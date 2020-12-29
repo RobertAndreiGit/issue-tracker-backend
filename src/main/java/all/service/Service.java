@@ -773,7 +773,7 @@ public class Service
     private void removeUserFromBoardIssues(User user,int boardId)
     {
         List<Issue>issues=issueRepository.findAllByBoard_Id(boardId);
-        List<Issue> foundIssues=issues.stream().filter((issue)->issue.getUser().getId()==user.getId()).collect(Collectors.toList());
+        List<Issue> foundIssues=issues.stream().filter((issue)->issue.getUser()!=null && issue.getUser().getId()==user.getId()).collect(Collectors.toList());
 
         foundIssues.forEach((issue)->{issue.setUser(null); issueRepository.save(issue);});
     }
