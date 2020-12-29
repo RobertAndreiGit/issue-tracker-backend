@@ -183,7 +183,7 @@ public class Service
         return issue.getBoard().getId() == boardId;
     }
 
-    public String takeIssue(int boardId, int issueId, String accountUsername)
+    private String checkTakeIssue(int boardId,int issueId,String accountUsername)
     {
         if(!isUserPartOfBoard(accountUsername,boardId))
         {
@@ -195,8 +195,6 @@ public class Service
             return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
-        Issue issue =issueRepository.findById(issueId).get();
-
         Optional<User> optionalUser=userRepository.findUserByAccount_Username(accountUsername);
 
         if(!optionalUser.isPresent())
@@ -204,10 +202,26 @@ public class Service
             return Messages.USER_DOES_NOT_EXIST;
         }
 
+        return Messages.SUCCESS;
+    }
+
+    public String takeIssue(int boardId, int issueId, String accountUsername)
+    {
+        String message=checkTakeIssue(boardId,issueId,accountUsername);
+
+        if(!message.equals(Messages.SUCCESS))
+        {
+            return message;
+        }
+
+        Issue issue=issueRepository.findById(issueId).get();
+
+        Optional<User> optionalUser=userRepository.findUserByAccount_Username(accountUsername);
+
         issue.setUser(optionalUser.get());
         issueRepository.save(issue);
 
-        return Messages.SUCCESS;
+        return message;
     }
 
     public List<Priority> getPriorities()
@@ -292,13 +306,15 @@ public class Service
         String messageStage=Messages.SUCCESS;
         String messageLabel=Messages.SUCCESS;
         String messageStoryPoints=Messages.SUCCESS;
+        String messageChangeUser=Messages.SUCCESS;
 
         boolean changeTitle=false;
         boolean changeText=false;
         boolean changeCategory=false;
         boolean changeStage=false;
         boolean changeLabel=false;
-        boolean changeStrotyPoints=false;
+        boolean changeStoryPoints=false;
+        boolean changeUser=false;
 
         if(entity.getTitle()!=null)
         {
@@ -333,10 +349,16 @@ public class Service
         if(entity.getStoryPoints()!=0)
         {
             messageStoryPoints=checkStoryPoints(entity.getBoardId(), entity.getId(), accountUsername);
-            changeStrotyPoints=true;
+            changeStoryPoints=true;
         }
 
-        String message=getResultMessage(messageTitle,messageText,messageCategory,messageStage,messageLabel,messageStoryPoints);
+        if(entity.getUsername()!=null)
+        {
+            messageChangeUser=checkTakeIssue(entity.getBoardId(), entity.getId(), accountUsername);
+            changeUser=true;
+        }
+
+        String message=getResultMessage(messageTitle,messageText,messageCategory,messageStage,messageLabel,messageStoryPoints,messageChangeUser);
 
 
         if(!message.equals(Messages.SUCCESS))
@@ -369,15 +391,20 @@ public class Service
             changeIssueLabel(entity.getBoardId(), entity.getId(), entity.getLabel(), entity.getLabelColour(), accountUsername);
         }
 
-        if(changeStrotyPoints)
+        if(changeStoryPoints)
         {
             changeStoryPoints(entity.getBoardId(), entity.getId(), entity.getStoryPoints(), accountUsername);
+        }
+
+        if(changeUser)
+        {
+            takeIssue(entity.getBoardId(),entity.getId(),accountUsername);
         }
 
         return message;
     }
 
-    private String getResultMessage(String messageTitle,String messageText,String messageCategory,String messageStage,String messageLabel,String messageStoryPoints)
+    private String getResultMessage(String messageTitle,String messageText,String messageCategory,String messageStage,String messageLabel,String messageStoryPoints, String messageChangeUser)
     {
         Set<String> errorMessages=new HashSet<>();
 
@@ -407,6 +434,11 @@ public class Service
         }
 
         if(!messageStoryPoints.equals(Messages.SUCCESS))
+        {
+            errorMessages.add(messageLabel);
+        }
+
+        if(!messageChangeUser.equals(Messages.SUCCESS))
         {
             errorMessages.add(messageLabel);
         }
@@ -482,7 +514,7 @@ public class Service
             return message;
         }
 
-        Issue issue =issueRepository.findById(issueId).get();
+        Issue issue=issueRepository.findById(issueId).get();
 
         issue.setStoryPoints(value);
         issueRepository.save(issue);
@@ -521,7 +553,7 @@ public class Service
             return message;
         }
 
-        Issue issue =issueRepository.findById(issueId).get();
+        Issue issue=issueRepository.findById(issueId).get();
 
         Optional<Priority> optionalPriority=priorityRepository.findById(priorityId);
 
@@ -560,7 +592,7 @@ public class Service
             colour="#FFFFFF";
         }
 
-        Issue issue =issueRepository.findById(issueId).get();
+        Issue issue=issueRepository.findById(issueId).get();
 
         Optional<Label> optionalLabel=labelRepository.findByNameAndColour(labelText,colour);
 
@@ -613,7 +645,7 @@ public class Service
             return message;
         }
 
-        Issue issue =issueRepository.findById(issueId).get();
+        Issue issue=issueRepository.findById(issueId).get();
 
         Optional<Category> optionalCategory=categoryRepository.findById(categoryId);
 
@@ -647,7 +679,7 @@ public class Service
             return message;
         }
 
-        Issue issue =issueRepository.findById(issueId).get();
+        Issue issue=issueRepository.findById(issueId).get();
 
         issue.setTitle(title);
         issueRepository.save(issue);
@@ -679,7 +711,7 @@ public class Service
             return message;
         }
 
-        Issue issue =issueRepository.findById(issueId).get();
+        Issue issue=issueRepository.findById(issueId).get();
 
         issue.setText(text);
         issueRepository.save(issue);
@@ -699,7 +731,7 @@ public class Service
             return Messages.ISSUE_NOT_PART_OF_BOARD;
         }
 
-        Issue issue =issueRepository.findById(issueId).get();
+        Issue issue=issueRepository.findById(issueId).get();
 
         issueRepository.delete(issue);
 

@@ -12,10 +12,11 @@ public class IssueRequestEntity
     private int stageId;
     private int priorityId;
     private int storyPoints;
+    private String username;
 
     public IssueRequestEntity(){}
 
-    public IssueRequestEntity(int id, String title, String text, int boardId, String label, String labelColour, int categoryId, int stageId, int priorityId, int storyPoints)
+    public IssueRequestEntity(int id, String title, String text, int boardId, String label, String labelColour, int categoryId, int stageId, int priorityId, int storyPoints, String username)
     {
         this.id = id;
         this.title = title;
@@ -27,6 +28,7 @@ public class IssueRequestEntity
         this.stageId = stageId;
         this.priorityId = priorityId;
         this.storyPoints = storyPoints;
+        this.username = username;
     }
 
     public int getId()
@@ -127,5 +129,15 @@ public class IssueRequestEntity
     public void setStoryPoints(int storyPoints)
     {
         this.storyPoints = storyPoints;
+    }
+
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public void setUsername(String username)
+    {
+        this.username = username;
     }
 }

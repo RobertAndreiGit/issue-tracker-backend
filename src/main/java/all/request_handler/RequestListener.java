@@ -143,12 +143,6 @@ public class RequestListener
         return responseIssueList;
     }
 
-    @GetMapping("/board/{boardId}/issues/{issueId}/take")
-    public MessageResponseEntity takeIssue(@PathVariable(name="boardId") int boardId, @PathVariable(name="issueId") int issueId)
-    {
-        return new MessageResponseEntity(service.takeIssue(boardId,issueId,getAccountUsername()));
-    }
-
     @GetMapping("/board/issues/priorities")
     public List<Priority> getPriorities()
     {
