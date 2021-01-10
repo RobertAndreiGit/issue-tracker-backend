@@ -8,10 +8,18 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                .successHandler(successHandler())
+                .failureHandler(failureHandler())
                 .permitAll()
                 .and()
                 .logout()
@@ -54,5 +64,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     public PasswordEncoder passwordEncoder()
     {
         return new BCryptPasswordEncoder();
+    }
+
+    private AuthenticationSuccessHandler successHandler()
+    {
+        return new AuthenticationSuccessHandler()
+        {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException
+            {
+                response.setStatus(200);
+            }
+        };
+    }
+
+    private AuthenticationFailureHandler failureHandler()
+    {
+        return new AuthenticationFailureHandler()
+        {
+            @Override
+            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException
+            {
+                response.setStatus(401);
+            }
+        };
     }
 }
