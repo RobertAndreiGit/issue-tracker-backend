@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -37,6 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers(HttpMethod.POST, "/issue_tracker/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
+                .exceptionHandling().authenticationEntryPoint(unauthenticatedHandler())
+                .and()
                 .formLogin()
                 .successHandler(successHandler())
                 .failureHandler(failureHandler())
@@ -46,6 +49,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .permitAll()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login");
+    }
+
+    @Bean
+    public UnauthenticatedRequestHandler unauthenticatedHandler()
+    {
+        return new UnauthenticatedRequestHandler();
+    }
+
+    private static class UnauthenticatedRequestHandler implements AuthenticationEntryPoint
+    {
+        @Override
+        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException
+        {
+            response.setStatus(403);
+        }
     }
 
     @Autowired
