@@ -23,8 +23,9 @@ public class Board
 
     public Board(){}
 
-    public Board(String name, User owner, List<User> users)
+    public Board(int id, String name, User owner, List<User> users)
     {
+        this.id=id;
         this.name = name;
         this.owner = owner;
         this.users = users;

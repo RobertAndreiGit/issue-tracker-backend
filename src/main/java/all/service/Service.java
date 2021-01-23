@@ -313,6 +313,7 @@ public class Service
         String messageCategory=Messages.SUCCESS;
         String messageStage=Messages.SUCCESS;
         String messageLabel=Messages.SUCCESS;
+        String messagePriority=Messages.SUCCESS;
         String messageStoryPoints=Messages.SUCCESS;
         String messageChangeUser=Messages.SUCCESS;
 
@@ -321,6 +322,7 @@ public class Service
         boolean changeCategory=false;
         boolean changeStage=false;
         boolean changeLabel=false;
+        boolean changePriority=false;
         boolean changeStoryPoints=false;
         boolean changeUser=false;
 
@@ -360,13 +362,19 @@ public class Service
             changeStoryPoints=true;
         }
 
+        if(entity.getPriorityId()!=0)
+        {
+            messagePriority=checkPriority(entity.getBoardId(),entity.getId(),entity.getPriorityId(),accountUsername);
+            changePriority=true;
+        }
+
         if(entity.getUsername()!=null)
         {
             messageChangeUser=checkTakeIssue(entity.getBoardId(), entity.getId(), accountUsername);
             changeUser=true;
         }
 
-        String message=getResultMessage(messageTitle,messageText,messageCategory,messageStage,messageLabel,messageStoryPoints,messageChangeUser);
+        String message=getResultMessage(messageTitle,messageText,messageCategory,messageStage,messageLabel,messageStoryPoints,messageChangeUser,messagePriority);
 
 
         if(!message.equals(Messages.SUCCESS))
@@ -394,6 +402,11 @@ public class Service
             changeIssueStage(entity.getBoardId(), entity.getId(), entity.getStageId(), accountUsername);
         }
 
+        if(changePriority)
+        {
+            changePriority(entity.getBoardId(),entity.getId(),entity.getPriorityId(),accountUsername);
+        }
+
         if(changeLabel)
         {
             changeIssueLabel(entity.getBoardId(), entity.getId(), entity.getLabel(), entity.getLabelColour(), accountUsername);
@@ -412,7 +425,7 @@ public class Service
         return message;
     }
 
-    private String getResultMessage(String messageTitle,String messageText,String messageCategory,String messageStage,String messageLabel,String messageStoryPoints, String messageChangeUser)
+    private String getResultMessage(String messageTitle,String messageText,String messageCategory,String messageStage,String messageLabel,String messageStoryPoints, String messageChangeUser, String messagePriority)
     {
         Set<String> errorMessages=new HashSet<>();
 
@@ -443,12 +456,17 @@ public class Service
 
         if(!messageStoryPoints.equals(Messages.SUCCESS))
         {
-            errorMessages.add(messageLabel);
+            errorMessages.add(messageStoryPoints);
+        }
+
+        if(!messagePriority.equals(Messages.SUCCESS))
+        {
+            errorMessages.add(messagePriority);
         }
 
         if(!messageChangeUser.equals(Messages.SUCCESS))
         {
-            errorMessages.add(messageLabel);
+            errorMessages.add(messageChangeUser);
         }
 
         if(errorMessages.size()==0)
